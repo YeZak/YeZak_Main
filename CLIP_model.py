@@ -73,7 +73,7 @@ model = model.to(device)
 
 #@title Upload Image
 
-image = io.imread("../input.jpg")
+image = io.imread("../clip_test_image/modern_impressionism35.jpg")
 io.imshow(image)
 io.show()
 
@@ -106,7 +106,7 @@ else:
 print('\n')
 print(generated_text_prefix)
 
-
-
+spl_tag = generated_text_prefix.split()
+print(spl_tag)
 
 
