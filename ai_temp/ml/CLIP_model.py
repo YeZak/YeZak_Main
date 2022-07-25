@@ -1,0 +1,406 @@
+
+import clip
+import os
+from torch import nn
+import numpy as np
+import torch
+import torch.nn.functional as nnf
+import sys
+from typing import Tuple, List, Union, Optional
+from transformers import GPT2Tokenizer, GPT2LMHeadModel, AdamW, get_linear_schedule_with_warmup
+from tqdm import tqdm, trange
+#from google.colab import files
+import skimage.io as io
+import PIL.Image
+from pathlib import Path
+#from IPython.display import Image
+#from mldemo.settings import BASE_DIR
+#from CLIP_func import ClipCaptionModel, generate_beam, generate2, mktag
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+
+N = type(None)
+V = np.array
+ARRAY = np.ndarray
+ARRAYS = Union[Tuple[ARRAY, ...], List[ARRAY]]
+VS = Union[Tuple[V, ...], List[V]]
+VN = Union[V, N]
+VNS = Union[VS, N]
+T = torch.Tensor
+TS = Union[Tuple[T, ...], List[T]]
+TN = Optional[T]
+TNS = Union[Tuple[TN, ...], List[TN]]
+TSN = Optional[TS]
+TA = Union[T, ARRAY]
+
+D = torch.device
+CPU = torch.device('cpu')
+
+#@title Model
+
+class MLP(nn.Module):
+
+    def forward(self, x: T) -> T:
+        return self.model(x)
+
+    def __init__(self, sizes: Tuple[int, ...], bias=True, act=nn.Tanh):
+        super(MLP, self).__init__()
+        layers = []
+        for i in range(len(sizes) -1):
+            layers.append(nn.Linear(sizes[i], sizes[i + 1], bias=bias))
+            if i < len(sizes) - 2:
+                layers.append(act())
+        self.model = nn.Sequential(*layers)
+
+
+class ClipCaptionModel(nn.Module):
+
+    #@functools.lru_cache #FIXME
+    def get_dummy_token(self, batch_size: int, device: D) -> T:
+        return torch.zeros(batch_size, self.prefix_length, dtype=torch.int64, device=device)
+
+    def forward(self, tokens: T, prefix: T, mask: Optional[T] = None, labels: Optional[T] = None):
+        embedding_text = self.gpt.transformer.wte(tokens)
+        prefix_projections = self.clip_project(prefix).view(-1, self.prefix_length, self.gpt_embedding_size)
+        #print(embedding_text.size()) #torch.Size([5, 67, 768])
+        #print(prefix_projections.size()) #torch.Size([5, 1, 768])
+        embedding_cat = torch.cat((prefix_projections, embedding_text), dim=1)
+        if labels is not None:
+            dummy_token = self.get_dummy_token(tokens.shape[0], tokens.device)
+            labels = torch.cat((dummy_token, tokens), dim=1)
+        out = self.gpt(inputs_embeds=embedding_cat, labels=labels, attention_mask=mask)
+        return out
+
+    def __init__(self, prefix_length: int, prefix_size: int = 512):
+        super(ClipCaptionModel, self).__init__()
+        self.prefix_length = prefix_length
+
+        self.gpt = GPT2LMHeadModel.from_pretrained('gpt2')
+
+        self.gpt_embedding_size = self.gpt.transformer.wte.weight.shape[1]
+        if prefix_length > 10:  # not enough memory
+            self.clip_project = nn.Linear(prefix_size, self.gpt_embedding_size * prefix_length)
+        else:
+            self.clip_project = MLP((prefix_size, (self.gpt_embedding_size * prefix_length) // 2, self.gpt_embedding_size * prefix_length))
+
+
+class ClipCaptionPrefix(ClipCaptionModel):
+
+    def parameters(self, recurse: bool = True):
+        return self.clip_project.parameters()
+
+    def train(self, mode: bool = True):
+        super(ClipCaptionPrefix, self).train(mode)
+        self.gpt.eval()
+        return self
+
+
+
+def generate_beam(model, tokenizer, beam_size: int = 5, prompt=None, embed=None,
+                  entry_length=67, temperature=1., stop_token: str = '.'):
+
+    model.eval()
+    stop_token_index = tokenizer.encode(stop_token)[0]
+    tokens = None
+    scores = None
+    device = next(model.parameters()).device
+    seq_lengths = torch.ones(beam_size, device=device)
+    is_stopped = torch.zeros(beam_size, device=device, dtype=torch.bool)
+    with torch.no_grad():
+        if embed is not None:
+            generated = embed
+        else:
+            if tokens is None:
+                tokens = torch.tensor(tokenizer.encode(prompt))
+                tokens = tokens.unsqueeze(0).to(device)
+                generated = model.gpt.transformer.wte(tokens)
+        for i in range(entry_length):
+            outputs = model.gpt(inputs_embeds=generated)
+            logits = outputs.logits
+            logits = logits[:, -1, :] / (temperature if temperature > 0 else 1.0)
+            logits = logits.softmax(-1).log()
+            if scores is None:
+                scores, next_tokens = logits.topk(beam_size, -1)
+                generated = generated.expand(beam_size, *generated.shape[1:])
+                next_tokens, scores = next_tokens.permute(1, 0), scores.squeeze(0)
+                if tokens is None:
+                    tokens = next_tokens
+                else:
+                    tokens = tokens.expand(beam_size, *tokens.shape[1:])
+                    tokens = torch.cat((tokens, next_tokens), dim=1)
+            else:
+                logits[is_stopped] = -float(np.inf)
+                logits[is_stopped, 0] = 0
+                scores_sum = scores[:, None] + logits
+                seq_lengths[~is_stopped] += 1
+                scores_sum_average = scores_sum / seq_lengths[:, None]
+                scores_sum_average, next_tokens = scores_sum_average.view(-1).topk(beam_size, -1)
+                next_tokens_source = next_tokens // scores_sum.shape[1]
+                seq_lengths = seq_lengths[next_tokens_source]
+                next_tokens = next_tokens % scores_sum.shape[1]
+                next_tokens = next_tokens.unsqueeze(1)
+                tokens = tokens[next_tokens_source]
+                tokens = torch.cat((tokens, next_tokens), dim=1)
+                generated = generated[next_tokens_source]
+                scores = scores_sum_average * seq_lengths
+                is_stopped = is_stopped[next_tokens_source]
+            next_token_embed = model.gpt.transformer.wte(next_tokens.squeeze()).view(generated.shape[0], 1, -1)
+            generated = torch.cat((generated, next_token_embed), dim=1)
+            is_stopped = is_stopped + next_tokens.eq(stop_token_index).squeeze()
+            if is_stopped.all():
+                break
+    scores = scores / seq_lengths
+    output_list = tokens.cpu().numpy()
+    output_texts = [tokenizer.decode(output[:int(length)]) for output, length in zip(output_list, seq_lengths)]
+    order = scores.argsort(descending=True)
+    output_texts = [output_texts[i] for i in order]
+    return output_texts
+
+
+def generate2(
+        model,
+        tokenizer,
+        tokens=None,
+        prompt=None,
+        embed=None,
+        entry_count=1,
+        entry_length=67,  # maximum number of words
+        top_p=0.8,
+        temperature=1.,
+        stop_token: str = '.',
+):
+
+    model.eval()
+    generated_num = 0
+    generated_list = []
+    stop_token_index = tokenizer.encode(stop_token)[0]
+    filter_value = -float("Inf")
+    device = next(model.parameters()).device
+
+    with torch.no_grad():
+
+        for entry_idx in trange(entry_count):
+            if embed is not None:
+                generated = embed
+            else:
+                if tokens is None:
+                    tokens = torch.tensor(tokenizer.encode(prompt))
+                    tokens = tokens.unsqueeze(0).to(device)
+
+                generated = model.gpt.transformer.wte(tokens)
+
+            for i in range(entry_length):
+
+                outputs = model.gpt(inputs_embeds=generated)
+
+                logits = outputs.logits
+
+                logits = logits[:, -1, :] / (temperature if temperature > 0 else 1.0)
+                sorted_logits, sorted_indices = torch.sort(logits, descending=True)
+                cumulative_probs = torch.cumsum(nnf.softmax(sorted_logits, dim=-1), dim=-1)
+                sorted_indices_to_remove = cumulative_probs > top_p
+                sorted_indices_to_remove[..., 1:] = sorted_indices_to_remove[
+                                                    ..., :-1
+                                                    ].clone()
+                sorted_indices_to_remove[..., 0] = 0
+
+                indices_to_remove = sorted_indices[sorted_indices_to_remove]
+                logits[:, indices_to_remove] = filter_value
+                next_token = torch.argmax(logits, -1).unsqueeze(0)
+                next_token_embed = model.gpt.transformer.wte(next_token)
+                if tokens is None:
+                    tokens = next_token
+                else:
+                    tokens = torch.cat((tokens, next_token), dim=1)
+                generated = torch.cat((generated, next_token_embed), dim=1)
+                if stop_token_index == next_token.item():
+                    break
+
+            output_list = list(tokens.squeeze().cpu().numpy())
+            output_text = tokenizer.decode(output_list)
+            generated_list.append(output_text)
+
+    return generated_list[0]
+
+
+import string
+
+def mktag(str):
+    # str = str.replace(',', '')
+    # str = str.replace('.', '')
+    # str = str.replace('\'s', '')
+
+    str = str.translate(str.maketrans('', '', string.punctuation))
+    str_tag = str.split()
+
+    ex_words = ['a', 'an', 'the''about', 'above',
+'after',
+'against',
+'along',
+'around',
+'at',
+'beside',
+'beneath',
+'between',
+'but',
+'by',
+'down',
+'during',
+'for',
+'from',
+'in',
+'into',
+'of',
+'off',
+'on',
+'out',
+'over',
+'per',
+'round',
+'since',
+'through',
+'till',
+'to',
+'toward',
+'until',
+'up',
+'upon',
+'with',
+'within',
+'without',
+'ac',
+'after',
+'and'
+'as',
+'because',
+'but',
+'either',
+'else',
+'even though',
+'however',
+'if',
+'lest',
+'let alone',
+'like',
+'no sooner than',
+'nor',
+'now that',
+'once',
+'or',
+'provided',
+'save',
+'than',
+'though',
+'unless',
+'until',
+'whenever',
+'whether',
+'while',
+'without',
+'yet',
+'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves',
+'you', "you're", "you've", "you'll", "you'd", 'your', 'yours',
+ 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she',
+"she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they',
+'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who',
+ 'whom', 'this', 'that', "that'll", 'these', 'those', 'am', 'is', 'are',
+ 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having',
+ 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or',
+'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about',
+'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above',
+ 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under',
+'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why',
+ 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some',
+'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very',
+'s', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now',
+'d', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't",
+'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn', "hasn't",
+'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn', "mustn't",
+'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't",
+ 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't",
+"i'm", "not", "sure", "created", "small", "special",  "would", "early", "released",
+"vector", "different", "selected", "year",
+
+
+]   #넘 길어서 접음
+
+    for word in ex_words:
+        for tag in str_tag:
+            if (word == tag):
+                str_tag.remove(tag)
+
+    for i, word in enumerate(str_tag):
+        str_tag[i] = "#" + word
+
+    return str_tag
+
+
+
+def CLIP_tag(image):
+
+    if torch.cuda.is_available():
+        device = "cuda"
+    else:
+        device = "cpu"    #colab GPU사용량 초과해서 cpu사용 -> false출력
+
+    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+    clip_model, preprocess = clip.load("ViT-B/32", device=device, jit=False)
+    #다운 안되면 pip3 install clip-by-openai 설치하기!
+
+    #@title Load model weights
+
+    prefix_length = 10
+
+    model = ClipCaptionModel(prefix_length)
+
+    path= os.path.join(BASE_DIR, "model_weights.pt")
+
+    #몇몇 인자는 일치 않을 수 있으니 strict = False 추가
+    model.load_state_dict(torch.load(path, map_location=torch.device('cpu')), strict = False)
+
+    model = model.eval()
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model = model.to(device)
+
+    # os.environ['KMP_DUPLICATE_LIB_OK']='True'
+    #@title Upload Image
+
+    image = io.imread(image)
+    # io.imshow(image)
+    # io.show()
+
+    #pil_image = PIL.Image.open(image)
+
+    #image = np.array(image)
+
+    pil_image = PIL.Image.fromarray(image)
+    # #@title Inference
+    use_beam_search = False #@param {type:"boolean"}
+
+    image = preprocess(pil_image).unsqueeze(0).to(device)
+
+    with torch.no_grad():
+        # if type(model) is ClipCaptionE2E:
+        #     prefix_embed = model.forward_image(image)
+        # else:
+        prefix = clip_model.encode_image(image).to(device, dtype=torch.float32)
+        #prefix = clip_model.encode_image(image)
+
+        print(prefix.shape)
+
+        prefix_embed = model.clip_project(prefix).reshape(1, prefix_length, -1)
+
+    if use_beam_search:
+
+        generated_text_prefix = generate_beam(model, tokenizer, embed=prefix_embed)[0]
+    else:
+
+        generated_text_prefix = generate2(model, tokenizer, embed=prefix_embed)
+
+    return mktag(generated_text_prefix)
+
+
+
+
