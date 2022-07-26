@@ -171,16 +171,12 @@ def generate2(
         stop_token: str = '.',
 ):
 
-    print("Success In")
-
     model.eval()
     generated_num = 0
     generated_list = []
     stop_token_index = tokenizer.encode(stop_token)[0]
     filter_value = -float("Inf")
     device = next(model.parameters()).device
-
-    print("Success In 2")
 
     with torch.no_grad():
 
@@ -198,12 +194,7 @@ def generate2(
 
                 outputs = model.gpt(inputs_embeds=generated)
 
-                print("Success In 3")
-
                 logits = outputs.logits
-
-
-                print("Success In 4")
 
                 logits = logits[:, -1, :] / (temperature if temperature > 0 else 1.0)
                 sorted_logits, sorted_indices = torch.sort(logits, descending=True)
@@ -231,3 +222,115 @@ def generate2(
             generated_list.append(output_text)
 
     return generated_list[0]
+
+
+import string
+
+def mktag(str):
+    # str = str.replace(',', '')
+    # str = str.replace('.', '')
+    # str = str.replace('\'s', '')
+
+    str = str.translate(str.maketrans('', '', string.punctuation))
+    str_tag = str.split()
+
+    ex_words = ['a', 'an', 'the''about', 'above',
+'after',
+'against',
+'along',
+'around',
+'at',
+'beside',
+'beneath',
+'between',
+'but',
+'by',
+'down',
+'during',
+'for',
+'from',
+'in',
+'into',
+'of',
+'off',
+'on',
+'out',
+'over',
+'per',
+'round',
+'since',
+'through',
+'till',
+'to',
+'toward',
+'until',
+'up',
+'upon',
+'with',
+'within',
+'without',
+'ac',
+'after',
+'and'
+'as',
+'because',
+'but',
+'either',
+'else',
+'even though',
+'however',
+'if',
+'lest',
+'let alone',
+'like',
+'no sooner than',
+'nor',
+'now that',
+'once',
+'or',
+'provided',
+'save',
+'than',
+'though',
+'unless',
+'until',
+'whenever',
+'whether',
+'while',
+'without',
+'yet',
+'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves',
+'you', "you're", "you've", "you'll", "you'd", 'your', 'yours',
+ 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she',
+"she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they',
+'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who',
+ 'whom', 'this', 'that', "that'll", 'these', 'those', 'am', 'is', 'are',
+ 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having',
+ 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or',
+'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about',
+'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above',
+ 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under',
+'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why',
+ 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some',
+'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very',
+'s', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now',
+'d', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't",
+'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn', "hasn't",
+'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn', "mustn't",
+'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't",
+ 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't",
+"i'm", "not", "sure", "created", "small", "special",  "would", "early", "released",
+"vector", "different", "selected", "year",
+
+
+]   #넘 길어서 접음
+
+    for word in ex_words:
+        for tag in str_tag:
+            if (word == tag):
+                str_tag.remove(tag)
+
+    for i, word in enumerate(str_tag):
+        str_tag[i] = "#" + word
+
+    return str_tag

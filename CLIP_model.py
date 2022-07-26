@@ -14,12 +14,10 @@ import skimage.io as io
 import PIL.Image
 from pathlib import Path
 #from IPython.display import Image
-
 #from mldemo.settings import BASE_DIR
-from CLIP_func import ClipCaptionModel, generate_beam, generate2
+from CLIP_func import ClipCaptionModel, generate_beam, generate2, mktag
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 N = type(None)
 V = np.array
@@ -39,74 +37,79 @@ D = torch.device
 CPU = torch.device('cpu')
 
 
-if torch.cuda.is_available():
-    device = "cuda"
+def CLIP_tag(image, Is_path = True):
 
-    print(torch.cuda.is_available())
+    if torch.cuda.is_available():
+        device = "cuda"
+    else:
+        device = "cpu"    #colab GPU사용량 초과해서 cpu사용 -> false출력
 
-else:
-    device = "cpu"    #colab GPU사용량 초과해서 cpu사용 -> false출력
+    device = "cpu"
 
-print("Device = ", device)
+    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+    clip_model, preprocess = clip.load("ViT-B/32", device=device, jit=False)
+    #다운 안되면 pip3 install clip-by-openai 설치하기!
 
-tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+    #@title Load model weights
 
-clip_model, preprocess = clip.load("ViT-B/32", device=device, jit=False)
-#다운 안되면 pip3 install clip-by-openai 설치하기!
+    prefix_length = 10
 
-#@title Load model weights
+    model = ClipCaptionModel(prefix_length)
 
-prefix_length = 10
+    path= os.path.join(BASE_DIR, "model_weights.pt")
 
-model = ClipCaptionModel(prefix_length)
+    #몇몇 인자는 일치 않을 수 있으니 strict = False 추가
+    model.load_state_dict(torch.load(path, map_location=torch.device('cpu')), strict = False)
 
-path= os.path.join(BASE_DIR, "model_weights.pt")
+    model = model.eval()
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
-#몇몇 인자는 일치 않을 수 있으니 strict = False 추가
-model.load_state_dict(torch.load(path, map_location=CPU), strict = False)
+    device = "cpu"
 
-model = model.eval()
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model = model.to(device)
+    model = model.to(device)
 
-# os.environ['KMP_DUPLICATE_LIB_OK']='True'
+    # os.environ['KMP_DUPLICATE_LIB_OK']='True'
+    #@title Upload Image
 
-#@title Upload Image
 
-image = io.imread("../clip_test_image/modern_impressionism35.jpg")
-io.imshow(image)
-io.show()
+    if (Is_path):
+        image = io.imread(image)
 
-pil_image = PIL.Image.fromarray(image)
+    pil_image = PIL.Image.fromarray(image)
+    # #@title Inference
+    use_beam_search = False #@param {type:"boolean"}
 
-# #@title Inference
+    # io.imshow(image)
+    # io.show()
+    # pil_image = PIL.Image.open(image)
+    # image = np.array(image)
 
-use_beam_search = False #@param {type:"boolean"}
+    image = preprocess(pil_image).unsqueeze(0).to(device)
 
-image = preprocess(pil_image).unsqueeze(0).to(device)
+    with torch.no_grad():
+        # if type(model) is ClipCaptionE2E:
+        #     prefix_embed = model.forward_image(image)
+        # else:
 
-with torch.no_grad():
-    # if type(model) is ClipCaptionE2E:
-    #     prefix_embed = model.forward_image(image)
-    # else:
-    prefix = clip_model.encode_image(image).to(device, dtype=torch.float32)
-    #prefix = clip_model.encode_image(image)
+        print(device)
 
-    print(prefix.shape)
+        prefix = clip_model.encode_image(image).to(device, dtype=torch.float32)
+        #prefix = clip_model.encode_image(image)
 
-    prefix_embed = model.clip_project(prefix).reshape(1, prefix_length, -1)
+        print(prefix.shape)
 
-if use_beam_search:
+        prefix_embed = model.clip_project(prefix).reshape(1, prefix_length, -1)
 
-    generated_text_prefix = generate_beam(model, tokenizer, embed=prefix_embed)[0]
-else:
+    if use_beam_search:
+        generated_text_prefix = generate_beam(model, tokenizer, embed=prefix_embed)[0]
+    else:
+        generated_text_prefix = generate2(model, tokenizer, embed=prefix_embed)
 
-    generated_text_prefix = generate2(model, tokenizer, embed=prefix_embed)
+    return mktag(generated_text_prefix)
 
-print('\n')
-print(generated_text_prefix)
 
-spl_tag = generated_text_prefix.split()
-print(spl_tag)
+
+
+
 
 
