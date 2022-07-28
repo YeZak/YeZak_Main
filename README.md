@@ -1,2 +1,2 @@
-# AI
-인공지능 레포
+# .github
+2022 Summer Sillicon Valley Internship Program
