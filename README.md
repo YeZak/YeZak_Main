@@ -18,17 +18,10 @@
 <br>
 
 #### Architecture
-<p align="center">
-<img width="700px" src=".github/profile/image/Architecture.png" />
-</p>
-
-<br>
+![img](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/Architecture.png)
 
 #### FlowChart
-
-<p align="center">
-<img width="700px" src=".github/profile/image/FlowChart.png" />
-</p>
+![img](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/FlowChart.png)
 
 <br>
 
@@ -57,15 +50,15 @@
 
 #### keyword
 
-<td><img src="/profile/image/keyword.JPG" ></td>
+![i](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/keyword.JPG)
 
 인공지능 CLIP모델을 사용하였으며 데이터셋에 분류된 클래스를 기준으로 이미지를 분석하여 문장으로 나타내는데, 이를 str형식으로 받아 저희는 중요한 단어만 추출하여 해당 글에 #(해쉬태그)를 달아 검색에 용이하게 하였습니다.
-<td><img src="/profile/image/1.png" ></td>
-<td><img src="/profile/image/2.png" ></td>
+![p](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/1.png)
+![p](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/2.png)
 
 #### labeling
 
 등록된 게시글을 보면 해당 아트의 장르 또한 인공지능이 분류하는 모습을 볼 수 있는데요,
-<td><img src="/profile/image/labeling.JPG" ></td>
+![p](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/labeling.JPG)
 이 뿐만 아니라 미술품의 크기를 예상하게 하기위해 + 그에 맞는 인테리어에 담긴 모습을 보여주어 구매자의 욕구를 불러일으킬뿐만 아니라, 역으로 본인의 인테리어에 맞는 작품인것 또한 확인할 수 있습니다.
-<td><img src="/profile/image/interior.JPG" ></td>
+![p](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/%EC%97%85%EB%A1%9C%EB%93%9C%EB%90%9C%20%EC%9D%B4%EB%AF%B8%EC%A7%80%20%ED%99%95%EC%9D%B8.JPG]
