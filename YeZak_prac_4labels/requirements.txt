@@ -1,0 +1,10 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+django~=3.0
+django-bootstrap-v5
+torch
+torchvision
+
+jupyter
+matplotlib
+tqdm
