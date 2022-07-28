@@ -1,0 +1,87 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+.input-img {
+    position: relative;
+    overflow: hidden;
+    width: 800px;
+    height: 40px;
+    margin: 15px 330px 8px;
+    padding: 5px 39px 10px 20px;
+    border: solid 1px #dadada;
+    background: white;
+    box-sizing: border-box;
+  }
+
+  .upload-all {
+    display: flex;
+    margin: 50px;
+  }
+  .input-box {
+    margin-left: 20px;
+  }
+
+  .upload-page {
+    width: 201px;
+    height: 40px;
+    font-size: 16px;
+    color: skyblue;
+    border: 1px solid skyblue;
+    background-color: white;
+  }
+ /* .uploadPage-button{
+    display: block;
+    width: 800px;
+    height: 49px;
+    margin: 20px 650px 20px;
+    color:navy;
+ } */
+ .upload-button{
+    background-color:navy;
+    color:white;
+    width: 800px;
+    height: 49px;
+    margin: 20px 330px 20px;
+ }
+ .upload-page-cancel{
+    top: 700px;
+    left: 378px;
+    width: 800px;
+    height: 49px;
+    display: inline-block;
+    position: absolute;
+    box-sizing: border-box;
+    border-color: transparent;
+    background-color: navy;
+    color:white;
+    text-align: center;
+    padding:10px;
+ }
+
+  .inputs{
+    position: relative;
+    overflow: hidden;
+    width: 800px;
+    height: 40px;
+    margin: 10px 310px 8px;
+    padding: 5px 39px 6px 11px;
+    border: solid 1px #dadada;
+    background: white;
+    box-sizing: border-box;
+  }
+  
+  /*RESET*/
+  * { margin: 0; padding: 0; }
+  body { font: 17px 'Nanum Gothic', sans-serif; }
+  a { text-decoration: none; color: #404040; }
+  li { list-style: none; }

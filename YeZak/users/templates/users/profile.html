@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% include 'shared/navbar.html' %}
+
+<div class="row my-3 p-3">
+    <h1>This is the profile page for {{user.username}}</h1>
+</div>
+<h3>Username : {{user.username}}</h3>
+<h3>Profile Picture:</h3>
+<img src="{{ user.profile_photo }}" width="200">
+
+{% endblock %}

@@ -1,0 +1,74 @@
+<body>
+    <h2>게시판</h2>
+    <form method="post">
+        {% csrf_token %}
+        <select name="search_option">
+            {% if search_option == 'seller' %}
+            <option value="seller" selected>작가명</option>
+            <option value="item_name">품명</option>
+            <option value="details">내용</option>
+            <option value="all">판매자+품명+내용</option>
+            {% elif search_option == 'item_name' %}
+            <option value="seller">작가명</option>
+            <option value="item_name" selected>품명</option>
+            <option value="details">내용</option>
+            <option value="all">판매자+품명+내용</option>
+            {% elif search_option == 'details' %}
+            <option value="seller">작가명</option>
+            <option value="item_name">품명</option>
+            <option value="details" selected>내용</option>
+            <option value="all">판매자+품명+내용</option>
+            {% else %}
+            <option value="seller">작가명</option>
+            <option value="item_name">품명</option>
+            <option value="details">내용</option>
+            <option value="all" selected>판매자+품명+내용</option>
+            {% endif %}
+        </select>
+        <input name="search" value="{{search}}">
+        <input type="submit" value="검색">
+    </form>
+작품수: {{itemCount}}<br/>
+<a href="{% url 'posts:create' %}">작품 등록하기</a>
+<table border="1">
+    <tr>
+        <th>번호</th>
+        <th>판매자</th>
+        <th>작품명</th>
+        <th>가격</th>
+        <th>사진</th>
+    </tr>
+    {% for row in itemList %}
+    {% if row %}
+    <tr align="center">
+        <td>{{row.item_id}}</td>
+        <td>{{row.seller}}</td>
+        <td><a href="{% url 'posts:posts_detail' row.item_id %}">{{row.item_name}}</a></td>
+        <td>{{row.price}}</td>
+        <td>
+            {% load static %}
+            {% static '' as baseUrl %}
+            {% if row.filesize > 0 %}
+                <a href="download?item_id={{row.item_id}}"><img src="{{baseUrl}}images/file.png" width="20px" height="20px"></a>
+            {% endif %}
+        </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+    <tr>
+        <td colspan="7" align="center">
+            {% if start_page >= page_list_size %}
+                <a href="?start={{prev_list}}">[이전]</a>
+            {% endif %}
+            {% autoescape off %}
+            {% for link in links %}
+                {{link}}
+            {% endfor %}
+            {% endautoescape %}
+            {% if total_page > end_page %}
+                <a href="?start={{next_list}}">[다음]</a>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+</body>

@@ -1,0 +1,120 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+
+  #Bborder {
+    width: 1000px;
+    margin: 0 auto;
+  }
+
+  #P_img {
+    margin-right: 40px;
+    margin-bottom: 20px;
+  }
+
+  section {
+    display: flex;
+  }
+
+  .sp_ {
+    margin-left: 50px;
+  }
+
+  .sp_1 {
+    font-size: 27px;
+    display: block;
+    width: 360px;
+    height: 60px;
+    text-align: left;
+  }
+
+  .sp_2 {
+    font-size: 23px;
+    display: block;
+    width: 360px;
+    height: 50px;
+    text-align: left;
+  }
+
+  .sp_2_5 {
+    font-size: 15px;
+    display: block;
+    width: 360px;
+    height: 50px;
+    text-align: left;
+    opacity: 50%;
+    margin-top: 20px;
+  }
+
+  .sp_3 {
+    font-size: 25px;
+    display: block;
+    width: 360px;
+    height: 96px;
+    text-align: right;
+  }
+
+  .sp_4 {
+    font-size: 20px;
+    opacity: 70%;
+    display: block;
+    width: 360px;
+    height: 30px;
+    margin-top: 190px;
+    margin-bottom: 6px;
+    text-align: right;
+  }
+
+  .product {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .product_name {
+    margin-top: 50px;
+    font-size: 30px;
+  }
+
+  .product_detail {
+    margin-top: 35px;
+    font-size: 25px;
+  }
+
+  .buy__now{
+    width: 200px;
+    height: 45px;
+    font-size: 18px;
+    color: white;
+    border: 0.5px solid white;
+    background-color: navy;
+  }
+
+  .like_button{
+    width: 50px;
+    height: 45px;
+    font-size: 18px;
+    border: 1px solid gray;
+    background-color: white;
+  }
+
+  .comunity_button {
+    display: block;
+    text-align: right;
+  }
+  
+  /*RESET*/
+  * { margin: 0; padding: 0; }
+  body { font: 17px 'Nanum Gothic', sans-serif; }
+  a { text-decoration: none; color: #404040; }
+  li { list-style: none; }

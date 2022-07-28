@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>YeZak</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'detail.css' %}">
+</head>
+<body>
+    <div id="Bborder">
+        {% block contents %}
+        <section>
+            <div class='P_img'>
+                <img src="{{ tw.image.url }}" width="555px" height="555px" />
+            </div>
+            <span class="sp_">
+                <span class='sp_1'>작품명: {{items.item_name}}</span>
+                <span class='sp_2'>작가명: {{items.seller_id}}</span>
+                <span class='sp_2_5'>사이즈: {{items.item_size_width}} x {{items.item_size_height}}</span>
+                <span class='sp_4'>판매중</span>
+                <span class='sp_3'> {{items.price}}원 </span>
+                <span class="comunity_button">
+                    <a href="#"><button type="button" class='buy__now' onclick="location.href='' ">채팅하기</button></a>
+                    <button type="button" class='like_button' onclick="">♡</button>
+                </span>
+            </span>
+        </section>
+        <section>
+            <div class="product">
+                <div class="product_name"><p>[작품 상세설명]</p></div>
+                <div class="product_detail">{{items.details|safe}}</div>
+            </div>
+        </section>
+        {%endblock contents%}
+    </div>
+</body>
+</html>

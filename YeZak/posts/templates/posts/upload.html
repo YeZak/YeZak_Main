@@ -1,0 +1,43 @@
+{% load static %}
+{% block contents %}
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>YeZak</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'upload.css' %}">
+</head>
+<body>
+    <form action="{% url 'posts:posts_upload' %}" method="GET">
+    {% csrf_token %}
+        <div id="Bborder">
+            <section>
+                <div class='P_img'>
+                    <img src="#" width="500px" height="500px" /> <br/>
+                    <p style="text-align:center;"><input type="file" name='item_pic' id="item_pic"></p>
+                </div>
+                <div class="column">
+                    <div class="flex">
+                        <div class="sp_">
+                            <span class='product'>작품명 </span><br/>
+                            <span class='product'>가격 </span><br/>
+                            <span class='product'>작품크기 </span><br/>
+                            <span class='product'>상세설명 </span>
+                        </div>
+                        <div class="inputbox">
+                            <span class='product_input'><input type="text" name="item_name" style="width:298px;" placeholder="작품명을 입력하세요"></span><br/>
+                            <span class='product_input'><input type="text" name="price" style="width:298px;" placeholder="가격을 입력하세요"></span><br/>
+                            <span class='product_input'><input type="text" name="item_size_width" size="15" placeholder="가로"> x <input type="text" name="item_size_height" size="15" placeholder="세로"></span><br/>
+                            <span class='product_input'><textarea type="text" name="details" style="width:298px; height:150px;" placeholder="제품 상세설명을 적어주세요"></textarea></span>
+                        </div>
+                    </div>
+                    <div class="comunity_button">
+                        <button type="button" class='cancel_button' onclick="location.href='../' ">cancel</button>
+                        <input type="submit" class='upload_button' value="upload">
+                    </div>
+                </div>
+            </section>
+        </div>
+    </form>
+</body>
+</html>
+{%endblock contents%}
