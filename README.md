@@ -61,4 +61,4 @@
 등록된 게시글을 보면 해당 아트의 장르 또한 인공지능이 분류하는 모습을 볼 수 있는데요,
 ![p](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/labeling.JPG)
 이 뿐만 아니라 미술품의 크기를 예상하게 하기위해 + 그에 맞는 인테리어에 담긴 모습을 보여주어 구매자의 욕구를 불러일으킬뿐만 아니라, 역으로 본인의 인테리어에 맞는 작품인것 또한 확인할 수 있습니다.
-![p](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/%EC%97%85%EB%A1%9C%EB%93%9C%EB%90%9C%20%EC%9D%B4%EB%AF%B8%EC%A7%80%20%ED%99%95%EC%9D%B8.JPG]
+![p](https://github.com/YeZak/.github/blob/edf5261e7602e7f28b05fd65298289e3105d0c9f/profile/image/%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4.JPG)
