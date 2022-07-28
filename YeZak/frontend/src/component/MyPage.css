@@ -1,0 +1,290 @@
+.my-page-my-page {
+    width: 1440px;
+    height: 1024px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    max-width: 1440px;
+    box-sizing: border-box;
+    align-items: flex-start;
+    border-color: transparent;
+    background-color: rgba(255, 255, 255, 1);
+  }
+  .my-page-group {
+    top: 122px;
+    left: 114px;
+    width: 1227px;
+    height: 732px;
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    align-items: flex-start;
+    flex-shrink: 1;
+    border-color: transparent;
+    background-color: rgba(255, 255, 255, 1);
+  }
+  .my-page-button {
+    top: 488px;
+    left: 738px;
+    width: 215px;
+    height: 52px;
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    align-items: flex-start;
+    border-color: transparent;
+    background-color: navy;
+  }
+  .my-page-rectangle2 {
+    top: 0px;
+    left: 0px;
+    width: 215px;
+    height: 52px;
+    position: absolute;
+    box-sizing: border-box;
+    object-fit: cover;
+    border-color: rgba(24, 160, 251, 1);
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 1);
+  }
+  .my-page-text {
+    top: 13.300000190734863px;
+    left: 29.46154022216797px;
+    color: white;
+    height: auto;
+    position: absolute;
+    font-size: 20px;
+    align-self: auto;
+    font-style: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 500px;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-text01 {
+    top: 110.30848693847656px;
+    left: 96px;
+    color: rgba(0, 0, 0, 1);
+    width: 1101px;
+    height: auto;
+    position: absolute;
+    font-size: 30px;
+    align-self: auto;
+    font-style: normal;
+    text-align: left;
+    font-family: Montserrat;
+    font-weight: 700px;
+    line-height: 36px;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-component1 {
+    top: 149px;
+    left: 291px;
+    width: 240px;
+    height: 240px;
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    align-items: flex-start;
+    border-color: transparent;
+  }
+  .my-page-group2 {
+    top: 425px;
+    left: 191px;
+    width: 440px;
+    height: 142.86181640625px;
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    align-items: flex-start;
+    flex-shrink: 1;
+    border-color: transparent;
+  }
+  .my-page-text02 {
+    top: 0px;
+    left: 0px;
+    color: rgba(0, 0, 0, 0.800000011920929);
+    width: 440px;
+    height: auto;
+    position: absolute;
+    font-size: 25px;
+    align-self: auto;
+    font-style: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 400px;
+    line-height: 24px;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-text03 {
+    top: 49px;
+    left: 0px;
+    color: rgba(0, 0, 0, 0.800000011920929);
+    width: 440px;
+    height: auto;
+    position: absolute;
+    font-size: 25px;
+    align-self: auto;
+    font-style: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 400px;
+    line-height: 24px;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-text04 {
+    top: 98px;
+    left: 0px;
+    color: rgba(0, 0, 0, 0.800000011920929);
+    width: 440px;
+    height: auto;
+    position: absolute;
+    font-size: 25px;
+    align-self: auto;
+    font-style: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 400px;
+    line-height: 24px;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-button1 {
+    top: 405px;
+    left: 712px;
+    width: 268px;
+    height: 52px;
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    align-items: flex-start;
+    border-color: transparent;
+    background-color: navy;
+  }
+  .my-page-rectangle21 {
+    top: 0px;
+    left: 0px;
+    width: 268px;
+    height: 52px;
+    position: absolute;
+    box-sizing: border-box;
+    object-fit: cover;
+    border-color: transparent;
+    border-radius: 6px;
+    background-color: var(--dl-color-default-actionableitem);
+  }
+  .my-page-text05 {
+    top: 13.300000190734863px;
+    left: 71.0923080444336px;
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    position: absolute;
+    font-size: 20px;
+    align-self: auto;
+    font-style: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 500px;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-button2 {
+    top: 322px;
+    left: 711px;
+    width: 268px;
+    height: 52px;
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    align-items: flex-start;
+    border-color: transparent;
+    background-color: navy;
+  }
+
+  .my-page-text06 {
+    top: 13.300000190734863px;
+    left: 53.092308044433594px;
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    position: absolute;
+    font-size: 20px;
+    align-self: auto;
+    font-style: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 500px;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-button3 {
+    top: 239px;
+    left: 715px;
+    width: 268px;
+    height: 52px;
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    align-items: flex-start;
+    border-color: transparent;
+    background-color: navy;
+  }
+  .my-page-text07 {
+    top: 13.300000190734863px;
+    left: 65.0923080444336px;
+    color: rgba(255, 255, 255, 1);
+    height: auto;
+    position: absolute;
+    font-size: 20px;
+    align-self: auto;
+    font-style: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 500px;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-button5 {
+    top: 582px;
+    left: 311px;
+    width: 200px;
+    height: 40px;
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    align-items: flex-start;
+    border-color: transparent;
+    background-color: navy;
+  }
+  .my-page-text09 {
+    top: 8px;
+    left: 45.615386962890625px;
+    color: white;
+    height: auto;
+    position: absolute;
+    font-size: 20px;
+    align-self: auto;
+    font-style: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-weight: 500px;
+    line-height: normal;
+    font-stretch: normal;
+    text-decoration: none;
+  }
+  .my-page-svg3 {
+    top: 2.962960720062256px;
+    left: 260px;
+    width: 300px;
+    height: 300px;
+    position: absolute;
+  }
