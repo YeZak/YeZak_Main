@@ -3,7 +3,7 @@
 | Name    | 김한규  | 박지은  | 백승민   | 신재용  | 유효주  |
 | ------- | --------------------------------------------- | --------------------------------------------- | --------------------------------------------- | --------------------------------------------- | --------------------------------------------- |
 | role    | Leader & AI & Design   | Backend & Design       | DB & AI       | Backend & DB      | Frontend & DB      |
-| Github  | [@Hankyu-Kim](https://github.com/Hankyu-Kim) | [@lucykorea414](https://github.com/lucykorea414) | [@Min100KM](https://github.com/Min100KM) | [@Heo sls0263](https://github.com/sls0263) | [@oohyj](https://github.com/oohyj) |
+| Github  | [@Hankyu-Kim](https://github.com/Hankyu-Kim) | [@lucykorea414](https://github.com/lucykorea414) | [@Min100KM](https://github.com/Min100KM) | [@sls0263](https://github.com/sls0263) | [@oohyj](https://github.com/oohyj) |
 
 ### 프로젝트명: YeZak
 프로젝트 한줄 소개: 미대생 예작 판매 웹사이트
